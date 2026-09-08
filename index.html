@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>STRIKE OPS — 3D Tactical Combat Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 3D WebGL Canvas Mount -->
+    <div id="canvas-container"></div>
+
+    <!-- Fullscreen Toggle for Mobile Browsers -->
+    <button id="btn-fullscreen" class="fullscreen-btn">⛶ FULLSCREEN</button>
+
+    <!-- Tactical Heads-Up Display (HUD) -->
+    <div id="hud-layer">
+        <div class="vignette-overlay"></div>
+        <div id="hud-damage-overlay"></div>
+        <div id="hud-blood-vignette"></div>
+
+        <!-- Top Compass -->
+        <div class="hud-compass">
+            <div id="hud-compass-bearing" class="compass-bearing">0° N</div>
+            <div class="compass-ticks">
+                <span>NW</span> • <span>N</span> • <span>NE</span> • <span>E</span> • <span>SE</span> • <span>S</span> • <span>SW</span> • <span>W</span>
+            </div>
+        </div>
+
+        <!-- Top-Left Mini Sonar Radar -->
+        <div class="hud-radar">
+            <canvas id="radar-canvas" width="90" height="90"></canvas>
+        </div>
+
+        <!-- Wave Status Indicator -->
+        <div class="hud-wave-status">
+            <span id="hud-wave-number" class="wave-num">WAVE 1</span>
+            <span>•</span>
+            <span>HOSTILES: <span id="hud-enemies-count" class="enemies-num">0</span></span>
+        </div>
+
+        <!-- Intermission Countdown -->
+        <div id="hud-intermission-timer">NEXT WAVE IN: 5s</div>
+
+        <!-- Cinematic Wave Banner -->
+        <div id="hud-wave-banner">
+            <div id="wave-banner-title">WAVE 1</div>
+            <div id="wave-banner-sub">INCOMING HOSTILES DETECTED</div>
+        </div>
+
+        <!-- Match Telemetry & Military Rank -->
+        <div class="hud-match-status">
+            <div class="stat">SCORE: <span id="hud-score">0</span></div>
+            <div class="stat">KILLS: <span id="hud-kills">0</span></div>
+            <div class="stat rank-stat">
+                <span id="hud-rank-badge" class="rank-badge">★</span>
+                <span id="hud-rank-title" class="rank-title">PRIVATE</span>
+            </div>
+            <div class="xp-bar-mini">
+                <div id="hud-xp-fill" class="xp-fill"></div>
+            </div>
+        </div>
+
+        <!-- Floating XP Toast Feed (COD Style) -->
+        <div id="hud-xp-feed" class="hud-xp-feed"></div>
+
+        <!-- Cinematic Rank Up Promotion Banner -->
+        <div id="hud-rank-banner" class="hud-rank-banner">
+            <div class="rank-banner-content">
+                <div class="rank-banner-header">RANK PROMOTED</div>
+                <div id="rank-banner-icon" class="rank-banner-icon">★</div>
+                <div id="rank-banner-name" class="rank-banner-name">PRIVATE FIRST CLASS</div>
+            </div>
+        </div>
+
+        <!-- Tactical Radio Chatter Feed -->
+        <div id="hud-radio-chatter" class="hud-radio-chatter">
+            <div class="radio-header">
+                <span class="radio-icon">📻</span>
+                <span id="radio-speaker" class="radio-speaker">HQ // OVERLORD</span>
+                <div class="radio-waveform">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+            <div id="radio-message" class="radio-message">"SYSTEMS OPERATIONAL. STANDING BY."</div>
+        </div>
+
+        <!-- Killstreaks HUD Stack (Right Edge) -->
+        <div class="hud-killstreaks">
+            <div class="streak-header">
+                <span>STREAK</span>
+                <span id="hud-streak-count" class="streak-val">0</span>
+            </div>
+            <div class="streak-buttons">
+                <button id="ks-strike-btn" class="ks-btn" title="7 Kills: Drone Airstrike">[6] AIRSTRIKE (0)</button>
+                <button id="ks-sentry-btn" class="ks-btn" title="5 Kills: Sentry Turret">[5] SENTRY (0)</button>
+                <button id="ks-uav-btn" class="ks-btn" title="3 Kills: Tactical UAV">[4] UAV SCAN</button>
+            </div>
+        </div>
+
+        <!-- Tactical Equipment Slots -->
+        <div class="hud-equipment">
+            <button id="btn-throw-frag" class="eq-slot" title="Frag Grenade [G]">
+                <span class="eq-key">G</span>
+                <span class="eq-icon">💣</span>
+                <span class="eq-name">FRAG</span>
+                <span id="hud-frag-count" class="eq-count">2</span>
+            </button>
+            <button id="btn-throw-smoke" class="eq-slot" title="Smoke Grenade [F]">
+                <span class="eq-key">F</span>
+                <span class="eq-icon">💨</span>
+                <span class="eq-name">SMOKE</span>
+                <span id="hud-smoke-count" class="eq-count">2</span>
+            </button>
+        </div>
+
+        <!-- Realtime Combat Killfeed -->
+        <div id="hud-killfeed" class="hud-killfeed"></div>
+
+        <!-- Dynamic Reticle / Crosshair -->
+        <div id="hud-crosshair">
+            <div class="crosshair-line top"></div>
+            <div class="crosshair-line bottom"></div>
+            <div class="crosshair-line left"></div>
+            <div class="crosshair-line right"></div>
+        </div>
+
+        <!-- Call of Duty Screen Hitmarker -->
+        <div id="hud-hitmarker">
+            <div class="hm-line hm-tl"></div>
+            <div class="hm-line hm-tr"></div>
+            <div class="hm-line hm-bl"></div>
+            <div class="hm-line hm-br"></div>
+        </div>
+
+        <!-- Bottom Left: Operator Vitals -->
+        <div class="hud-vitals">
+            <div class="vitals-label">OPERATOR HEALTH</div>
+            <div class="health-bar-container">
+                <div id="hud-health-fill" class="health-bar-fill"></div>
+            </div>
+        </div>
+
+        <!-- Weapon Attachments Quick-Bar -->
+        <div class="hud-attachments-bar">
+            <button id="att-btn-supp" class="att-btn" title="Toggle Suppressor">[T] SUPPRESSOR</button>
+            <button id="att-btn-laser" class="att-btn" title="Toggle Laser Sight">[L] LASER</button>
+            <button id="att-btn-mag" class="att-btn" title="Toggle Extended Magazine">[M] EXT MAG</button>
+        </div>
+
+        <!-- Bottom Right: Ammo & Weapon -->
+        <div class="hud-weapon">
+            <div id="hud-weapon-name" class="weapon-title">M4A1 CARBINE</div>
+            <div class="ammo-display">
+                <span id="hud-ammo-current" class="ammo-current">30</span>
+                <span class="ammo-slash">/</span>
+                <span id="hud-ammo-reserve" class="ammo-reserve">120</span>
+            </div>
+            <div id="hud-reload-indicator" class="reload-indicator">RELOADING...</div>
+        </div>
+    </div>
+
+    <!-- Mobile Touch Controls Layer -->
+    <div id="mobile-touch-overlay" style="display: none;">
+        <!-- Left Side: Movement Virtual Joystick -->
+        <div id="touch-zone-left">
+            <div id="joystick-base">
+                <div id="joystick-thumb"></div>
+            </div>
+        </div>
+
+        <!-- Right Side: Touch Camera Aim -->
+        <div id="touch-zone-right"></div>
+
+        <!-- Virtual Combat Buttons -->
+        <div id="btn-touch-shoot" class="touch-btn">FIRE</div>
+        <div id="btn-touch-ads" class="touch-btn">AIM</div>
+        <div id="btn-touch-reload" class="touch-btn">RELOAD</div>
+        <div id="btn-touch-jump" class="touch-btn">JUMP</div>
+        <div id="btn-touch-crouch" class="touch-btn">CROUCH</div>
+        <div id="btn-touch-weapon" class="touch-btn">CYCLE</div>
+        <div id="btn-touch-frag" class="touch-btn touch-eq-btn">FRAG</div>
+        <div id="btn-touch-smoke" class="touch-btn touch-eq-btn">SMOKE</div>
+        <div id="btn-touch-streak" class="touch-btn touch-streak-btn">STREAK</div>
+    </div>
+
+    <!-- Deployment / Briefing Modal -->
+    <div id="start-screen">
+        <div class="briefing-card">
+            <div class="briefing-header">
+                <h1>STRIKE<span>OPS</span> // TACTICAL</h1>
+                <p>SELECT LOADOUT, COMBAT ZONE & MISSION TYPE</p>
+            </div>
+
+            <!-- Map Selector -->
+            <div>
+                <div class="selector-label">TACTICAL COMBAT ZONE:</div>
+                <div class="map-selector-group">
+                    <button class="map-select-btn active" data-map="killhouse">KILLHOUSE</button>
+                    <button class="map-select-btn" data-map="desert">DESERT DUST</button>
+                    <button class="map-select-btn" data-map="cargoship">CARGO CARRIER</button>
+                </div>
+            </div>
+
+            <!-- Mode Selector -->
+            <div>
+                <div class="selector-label">MISSION OBJECTIVE:</div>
+                <div class="mode-selector-group">
+                    <button class="mode-select-btn active" data-mode="survival">SURVIVAL WAVE DEFENSE</button>
+                    <button class="mode-select-btn" data-mode="practice">TARGET RANGE PRACTICE</button>
+                </div>
+            </div>
+
+            <!-- Primary Weapon Selection -->
+            <div>
+                <div class="selector-label">PRIMARY WEAPON SELECTION:</div>
+                <div class="primary-selector-group">
+                    <button class="primary-select-btn active" data-weapon="rifle">M4A1 CARBINE</button>
+                    <button class="primary-select-btn" data-weapon="smg">MP5 TACTICAL</button>
+                    <button class="primary-select-btn" data-weapon="shotgun">SPAS-12 BREACHER</button>
+                    <button class="primary-select-btn" data-weapon="sniper">AWM RECON</button>
+                </div>
+            </div>
+
+            <!-- Weapon Camo Finish -->
+            <div>
+                <div class="selector-label">WEAPON CAMO FINISH:</div>
+                <div class="camo-selector-group">
+                    <button class="camo-select-btn active" data-camo="standard">STANDARD</button>
+                    <button class="camo-select-btn" data-camo="desert">DESERT OPS</button>
+                    <button class="camo-select-btn" data-camo="arctic">ARCTIC SPEC</button>
+                    <button class="camo-select-btn" data-camo="gold">GOLD ELITE</button>
+                    <button class="camo-select-btn" data-camo="damascus">DAMASCUS</button>
+                </div>
+            </div>
+
+            <!-- Tactical Perks Selection -->
+            <div>
+                <div class="selector-label">OPERATOR PERKS (3 TIERS):</div>
+                <div class="perks-grid">
+                    <div class="perk-slot">
+                        <span class="perk-tier-label">TIER 1 (BLUE)</span>
+                        <div class="perk-options">
+                            <button class="perk-btn active" data-tier="tier1" data-perk="scavenger">🎒 SCAVENGER (Drops)</button>
+                            <button class="perk-btn" data-tier="tier1" data-perk="lightweight">⚡ LIGHTWEIGHT (+Speed)</button>
+                        </div>
+                    </div>
+                    <div class="perk-slot">
+                        <span class="perk-tier-label">TIER 2 (RED)</span>
+                        <div class="perk-options">
+                            <button class="perk-btn active" data-tier="tier2" data-perk="fasthands">🧤 FAST HANDS (Reload)</button>
+                            <button class="perk-btn" data-tier="tier2" data-perk="hardline">🎖️ HARDLINE (-1 Streak)</button>
+                        </div>
+                    </div>
+                    <div class="perk-slot">
+                        <span class="perk-tier-label">TIER 3 (YELLOW)</span>
+                        <div class="perk-options">
+                            <button class="perk-btn active" data-tier="tier3" data-perk="quickfix">💉 QUICK FIX (Regen)</button>
+                            <button class="perk-btn" data-tier="tier3" data-perk="spotter">📡 SPOTTER (Radar)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="desktop-controls-hint" class="controls-guide">
+                <strong>PC Tactical Controls:</strong><br>
+                • <strong>W, A, S, D</strong>: Movement &nbsp;|&nbsp; <strong>Shift</strong>: Sprint &nbsp;|&nbsp; <strong>C</strong>: Crouch / Slide &nbsp;|&nbsp; <strong>Space</strong>: Jump<br>
+                • <strong>Mouse</strong>: Look &nbsp;|&nbsp; <strong>Left Click</strong>: Fire &nbsp;|&nbsp; <strong>Right Click / E</strong>: ADS Scope &nbsp;|&nbsp; <strong>R</strong>: Reload<br>
+                • <strong>1, 2, 3</strong>: Cycle Weapons &nbsp;|&nbsp; <strong>T</strong>: Suppressor &nbsp;|&nbsp; <strong>L</strong>: Laser &nbsp;|&nbsp; <strong>M</strong>: Ext Mag<br>
+                • <strong>G</strong>: Frag Grenade &nbsp;|&nbsp; <strong>F</strong>: Smoke Grenade &nbsp;|&nbsp; <strong>4, 5, 6</strong>: Killstreaks
+            </div>
+
+            <button id="btn-deploy" class="deploy-btn" onclick="if(window.strikeGame && window.strikeGame.deployGame){window.strikeGame.deployGame();}else{document.getElementById('start-screen').style.display='none';window.gameStarted=true;}">DEPLOY INTO COMBAT</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen / After-Action Report -->
+    <div id="game-over-screen">
+        <div class="game-over-card">
+            <h2>OPERATOR DOWN</h2>
+            <p style="color: #8b949e; letter-spacing: 1.5px; font-weight: 700;">AFTER-ACTION REPORT // DEBRIEF</p>
+
+            <div class="go-stats">
+                <div class="go-stat-item">
+                    <div id="go-final-wave" class="val">1</div>
+                    <div class="lbl">WAVE REACHED</div>
+                </div>
+                <div class="go-stat-item">
+                    <div id="go-final-kills" class="val">0</div>
+                    <div class="lbl">TOTAL KILLS</div>
+                </div>
+                <div class="go-stat-item">
+                    <div id="go-final-score" class="val">0</div>
+                    <div class="lbl">COMBAT SCORE</div>
+                </div>
+            </div>
+
+            <!-- Career Progression Summary in AAR -->
+            <div class="go-career-summary">
+                <div class="aar-rank-box">
+                    <span id="aar-rank-badge" class="aar-badge">★</span>
+                    <div class="aar-rank-details">
+                        <div id="aar-rank-name" class="aar-rank-name">PRIVATE</div>
+                        <div id="aar-xp-total" class="aar-xp-total">0 TOTAL XP</div>
+                    </div>
+                </div>
+                <div class="aar-stats-row">
+                    <div>CAREER KILLS: <strong id="aar-career-kills">0</strong></div>
+                    <div>HEADSHOTS: <strong id="aar-career-hs">0</strong></div>
+                </div>
+            </div>
+
+            <button id="btn-deploy-again" class="restart-btn">DEPLOY AGAIN</button>
+        </div>
+    </div>
+
+    <!-- Scripts: Vendor & Engine Components -->
+    <script src="vendor/three.min.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/weapons.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/radio.js"></script>
+    <script src="js/perks.js"></script>
+    <script src="js/progression.js"></script>
+    <script src="js/pickups.js"></script>
+    <script src="js/equipment.js"></script>
+    <script src="js/killstreaks.js"></script>
+    <script src="js/targets.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
