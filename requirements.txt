@@ -1,0 +1,2 @@
+# Strike Ops 3D Combat Engine
+# Standard library HTTP server - zero external dependencies required
