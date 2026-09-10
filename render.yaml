@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: manisoft-strike-ops
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: "echo Strike Ops ready"
+    startCommand: "python3 server.py"
+    envVars:
+      - key: PORT
+        value: 10000
