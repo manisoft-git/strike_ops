@@ -1389,5 +1389,296 @@ canvas {
     margin-left: 4px;
 }
 
+/* ==========================================================================
+   Tactical Mobile Responsive Ergonomics (< 768px and < 440px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Screen Overlays & Modals */
+    #start-screen, #game-over-screen {
+        padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom)) 10px;
+        align-items: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .briefing-card, .game-over-card {
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
+        margin: auto 0;
+        padding: 18px 14px;
+        gap: 12px;
+        border-radius: 8px;
+    }
+
+    .briefing-header h1 {
+        font-size: 22px;
+        letter-spacing: 1.5px;
+    }
+
+    .briefing-header p {
+        font-size: 12px;
+    }
+
+    .selector-label {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+
+    .map-selector-group {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .mode-selector-group {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .primary-selector-group {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .camo-selector-group {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .primary-select-btn, .camo-select-btn, .map-select-btn, .mode-select-btn {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    .perks-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .perk-options {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .perk-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 6px 8px;
+        font-size: 10.5px;
+    }
+
+    .controls-guide {
+        display: none;
+    }
+
+    .deploy-btn {
+        width: 100%;
+        padding: 13px 18px;
+        font-size: 16px;
+        letter-spacing: 2px;
+    }
+
+    /* HUD Elements for Mobile Screen */
+    .hud-compass {
+        display: none; /* Avoid HUD collision on phones */
+    }
+
+    .hud-radar {
+        width: 60px;
+        height: 60px;
+        top: max(10px, env(safe-area-inset-top));
+        left: max(10px, env(safe-area-inset-left));
+    }
+
+    .hud-wave-status {
+        top: max(10px, env(safe-area-inset-top));
+        left: 78px;
+        padding: 4px 8px;
+        font-size: 11px;
+        gap: 6px;
+    }
+
+    .hud-match-status {
+        top: max(10px, env(safe-area-inset-top));
+        right: max(10px, env(safe-area-inset-right));
+        padding: 4px 8px;
+        font-size: 11px;
+        gap: 8px;
+    }
+
+    .hud-match-status .rank-stat,
+    .hud-match-status .xp-bar-mini {
+        display: none;
+    }
+
+    .fullscreen-btn {
+        display: none;
+    }
+
+    .hud-radio-chatter {
+        top: 75px;
+        left: max(10px, env(safe-area-inset-left));
+        max-width: 240px;
+        padding: 6px 10px;
+    }
+
+    .radio-message {
+        font-size: 11px;
+    }
+
+    .hud-killfeed {
+        top: 42px;
+        right: max(10px, env(safe-area-inset-right));
+        gap: 4px;
+    }
+
+    .killfeed-entry {
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+
+    .hud-vitals {
+        bottom: 95px;
+        left: max(12px, env(safe-area-inset-left));
+    }
+
+    .hud-weapon {
+        bottom: max(10px, env(safe-area-inset-bottom));
+        right: max(10px, env(safe-area-inset-right));
+    }
+
+    .weapon-title {
+        font-size: 14px;
+    }
+
+    .ammo-current {
+        font-size: 26px;
+    }
+
+    .ammo-reserve {
+        font-size: 14px;
+    }
+
+    .hud-attachments-bar {
+        bottom: 68px;
+        right: max(10px, env(safe-area-inset-right));
+        gap: 4px;
+    }
+
+    .att-btn {
+        padding: 3px 6px;
+        font-size: 9px;
+    }
+
+    .hud-killstreaks {
+        right: 6px;
+        top: 42%;
+        gap: 4px;
+    }
+
+    .ks-btn {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+    /* Tactile Mobile Controls Ergonomics */
+    #btn-touch-shoot {
+        bottom: max(20px, env(safe-area-inset-bottom));
+        right: max(20px, env(safe-area-inset-right));
+        width: 74px;
+        height: 74px;
+        font-size: 15px;
+    }
+
+    #btn-touch-ads {
+        bottom: 102px;
+        right: max(22px, env(safe-area-inset-right));
+        width: 52px;
+        height: 52px;
+        font-size: 12px;
+    }
+
+    #btn-touch-reload {
+        bottom: max(22px, env(safe-area-inset-bottom));
+        right: 102px;
+        width: 50px;
+        height: 50px;
+        font-size: 11px;
+    }
+
+    #btn-touch-jump {
+        bottom: 92px;
+        right: 86px;
+        width: 48px;
+        height: 48px;
+        font-size: 11px;
+    }
+
+    #btn-touch-crouch {
+        bottom: 148px;
+        right: 76px;
+        width: 44px;
+        height: 44px;
+        font-size: 10px;
+    }
+
+    #btn-touch-weapon {
+        top: max(10px, env(safe-area-inset-top));
+        right: 150px;
+        width: 42px;
+        height: 42px;
+        font-size: 10px;
+    }
+
+    .touch-eq-btn {
+        bottom: 156px;
+        right: max(14px, env(safe-area-inset-right));
+        width: 42px;
+        height: 42px;
+        font-size: 9px;
+    }
+
+    #btn-touch-smoke {
+        right: 62px;
+    }
+
+    .touch-streak-btn {
+        bottom: 156px;
+        right: 110px;
+        width: 42px;
+        height: 42px;
+        font-size: 9px;
+    }
+
+    /* Game Over debrief */
+    .go-stats {
+        gap: 8px;
+    }
+
+    .go-stat-item .val {
+        font-size: 24px;
+    }
+
+    .go-stat-item .lbl {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 440px) {
+    .map-selector-group {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-selector-group {
+        grid-template-columns: 1fr;
+    }
+
+    .camo-selector-group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
 
 
