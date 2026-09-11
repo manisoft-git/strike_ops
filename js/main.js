@@ -96,6 +96,8 @@ class StrikeOpsGame {
         const mapButtons = document.querySelectorAll('.map-select-btn');
         mapButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
+                mapButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 const mapId = e.currentTarget.dataset.map;
                 if (!mapId) return;
                 const newSpawn = this.map.loadMap(mapId);
